@@ -32,7 +32,13 @@ Intervallet bli då Ib = b\*obs +- lambda(a/2) \* d\*obs
 
 ## Uppgift 3
 
+## Hur kan man skatta wk = log(yk) = B0 + B1\*xk + ek?
 
+Genom att MK skatta sum((log(yk)-(B0 + B1\*xk))^2) alltså minimera felet kan man få fram en skattning av B0 och B1.
+
+Felet blir normalfördelat för stora N, med väntevärde 0 (om det minimerats) och standardavvikelsen kan skattas som:
+
+s = sqrt(Q0/(n-2))
 
 # Problem
 
