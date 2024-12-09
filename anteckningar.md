@@ -51,13 +51,14 @@ intuition: P(väntevärdet inom intervallet) = 1-alpha = 95% => 100 \* 0.95 = 95
 
 Varians vanligt fall: ~4.8
 antal värden utanför intervall: vanligt fall ~4.986
-
 Om endast väntevärdet höjs (till 2000) minskar variansen till ~4.6 och antal värden utanför intervall blir 4.999 (högre) och närmare det förväntade antalet
 Om endast väntevärdet sänks (till 1/3000) är variansen något lägre än vanligt fall, samma med antal värden utanför intervall (lägre)
 Om standardavvikelsen höjs (till 10000) sjunker variansen till ~4.7 och antal värden utanför intervall är högre (5.0115)
 Om standardavvikelsen sänks (till 1/10000) sjunker variansen ännu mer till under ~4.7 men antal värden utanför intervall är högre (4.67)
 Om konfidensgraden ändras ändras antal värden utanför intervallet och variansen proportionerligt (pga högre/lägre värden). 
 om antalet värden som mäts (n) höjs/sänks minskar/höjs variansen något, men antalet värden utanför intervallet är ungefär samma.
+Såklart ändras ju d -> tightare eller lösare intervall
+
 
 # Problem 2
 
@@ -69,7 +70,7 @@ Ser bra ut, ML och MK skattningarna ger ~0.02 i fel
 
 ## Skatta Konfidensintervall för Rayleighfördelning
 
-Skattning på samma sätt som för problem 2 ger intervall på I = (1.0088405986551325, 1.0194429071193787)
+Skattning på samma sätt som för problem 2 ger intervall på I = (11.0037516815158023, 1.024531824258709)
 
 Skattningen verkar korrekt från visuell inspektion
 
@@ -95,14 +96,32 @@ Detta beror troligen på att n är litet, och att vissa extremvärden ökar skev
 
 # Problem 6
 
-## Konfidensintervall för skillnad mellan väntevärden för födelsevikter
-
-Konfidensintervallet för skillnaden i vikt mellan icke-rökare(Y) och rökare(X) Y-X blir \[52.72339852669616, 236.625401140022\] med 95% konfidensgrad. Alltså är snittskillnaden mellan vikten av barn från icke-rökare med ~95% sannolikhet inom intervallet \[53, 237\] gram
-
-# Problem 7
-
 ## Enkel linjär regression
 
 Residualerna bör rimligtvis vara distribuerade i en normalfördelning kring 0, då felet(residualen) är slumpmässigt och bör vara så jämt fördelat som möjligt => N(0, sqrt(Q0/(n-2))), Vilket i detta fall blir N(0, s) där s är ungefär 0.96. Detta betyder att felet rimligtvis ligger inom \[-1.88, 1.88\] (95% konfidensgrad) => att man i stort kan anta att modellen kommer vara fel med en faktor e^+-1.88 => 1/6.55, 6.55, vilket är stort. Detta beror troligtvis på att antalet mätpunkter är lågt och ganska spridda.
 
 Prediktionen för 2025 ger ~135 986 734 alltså ungefär 136 miljoner
+
+# Problem 7
+
+## Multipel linjär regression
+
+Betaväde: 19.311162690711136
+-> Skattat värde på samband mellan moderns längd och bebisens vikt
+övre gräns för konfidensintervallet för moderns vikt: 15.604302147143393, nedre gräns: 7.359104318564538
+övre gräns för konfidensintervallet för moderns rökvanor: -62.24165867735712, nedre gräns: -241.9236881272787
+övre gräns för konfidensintervallet för moderns träningsvanor: 128.8881627640585, nedre gräns: -58.86499587430934
+
+Konfidensintervallet för moderns vikt är positivt
+Konfidensintervallet för moderns rökvanor är negativt
+Konfidensintervallet för moderns träningsvanor inkluderar noll
+ -> Högre vikt ger tyngre bebis
+ -> Rökvanor ger lättare bebis
+ -> Träningsvanor har inte stor påverkan
+
+
+# Problem X
+
+## Konfidensintervall för skillnad mellan väntevärden för födelsevikter
+
+Konfidensintervallet för skillnaden i vikt mellan icke-rökare(Y) och rökare(X) Y-X blir \[52.72339852669616, 236.625401140022\] med 95% konfidensgrad. Alltså är snittskillnaden mellan vikten av barn från icke-rökare med ~95% sannolikhet inom intervallet \[53, 237\] gram

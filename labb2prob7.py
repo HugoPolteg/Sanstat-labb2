@@ -3,74 +3,95 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import tools
 import plotting
+import math
+import random
 
-#Ladda data
-moore = np.loadtxt('moore.dat')
-år = moore[:, 0]
-antal_resistorer = moore[:, 1]
-w = np.log(antal_resistorer)
 
-X  = np.ones((len(år), 2))
-X[:, 1] = år
-#Beräkna linjär regression
-beta_hat, beta_interval = tools.regress(X, w)
-print(beta_hat)
-beta_hat = np.array(beta_hat)
-#Plotta data och linjär regression
+def train_test_split(X, y, ratio):
+    
+    indices = np.array(range(len(X)))
+
+    train_size = round(ratio*len(X))
+
+    random.shuffle(indices)
+    train_indices = indices[0:train_size]
+    test_indices = indices[train_size:len(X)]
+    X_train = X[train_indices, :]
+    X_test = X[test_indices, :]
+    y_train = y[train_indices]
+    y_test = y[test_indices]
+    return X_train, X_test, y_train, y_test
+
+def normal_equation(X, y):
+    beta_hat = np.linalg.inv(X.T @ X) @ X.T @ y
+    return beta_hat
+
+def predict(X_test, beta_hat):
+    return X_test @ beta_hat
+
+#Multipel linjär regression
+# Ladda data
+birth = np.loadtxt('birth.dat')
+#Enkel linjär regression på födelsevikt och moderns längd
+nonans = ~np.isnan(birth[:, 2]) & ~np.isnan(birth[:, 15])
+X = birth[nonans, 15]
+X = np.c_[np.ones(len(X)), X]
+y = birth[nonans, 2]
+beta_hat, beta_interval = tools.regress(X, y)
+print(f'Betaväde: {beta_hat[1]}')
 plt.figure()
-plt.scatter(år, np.log(antal_resistorer))
-plt.plot(år, X @ beta_hat, 'r')
-plt.xlabel('År')
-plt.ylabel('Antal transistorer')
+plt.scatter(X[:, 1], y)
+plt.plot(X[:, 1], X @ beta_hat, 'r')
+plt.xlabel('Moders längd')
+plt.ylabel('Födelsevikt')
 plt.legend(['Data', 'Linjär regression'])
-plt.title('Logaritmerad data och linjär regression')
+plt.title('Födelsevikt och moderns längd')
 plt.show()
-
-
-print(np.shape(X))
-print(np.shape(beta_hat))
-## Problem 6: Regression
-# Bilda residualerna.
-res = w - X @ beta_hat
-# Skapa figur.
-plt.figure(figsize=(4, 8))
-# Plotta kvantil–kvantil-plot för residualerna.
-plt.subplot(2, 1, 1)
-_ = stats.probplot(res, plot=plt)
-# Plotta histogram för residualerna.
-plt.subplot(2, 1, 2)
-plt.hist(res, density=True)
-plt.show()
-
-Q0 = np.sum(res**2)
-s = np.sqrt(Q0/(len(år)-2))
-print(f'Standardavvikelsen för residualerna kan skattas till {s}')
-_, res_p = stats.jarque_bera(res)
-if(res_p < 0.05):
-    print('Residualerna är inte normalfördelade')
+#Multipel linjär regression på födelsevikt mot moderns längd, moderns vikt, moderns rökvanor och nivå av träning
+# Födelsevikt är på index 2, moderns vikt på index 14, moderns rökvanor på index 19 och nivå av träning på index 24
+nonans = ~np.isnan(birth[:, 2]) & ~np.isnan(birth[:, 14]) & ~np.isnan(birth[:, 19]) & ~np.isnan(birth[:, 24])
+X = birth[:, [14, 19, 24]]
+X = X[nonans]
+X = np.c_[np.ones(len(X)), X]
+#Sätt kategoriska värden till 0 eller 1
+rökare = (X[:, 2] == 3)
+icke_rökare = (X[:, 2] < 3)
+tränar = (X[:, 3] == 3)
+tränar_inte = (X[:, 3] < 3)
+X[rökare, 2] = 1
+X[icke_rökare, 2] = 0
+X[tränar, 3] = 1
+X[tränar_inte, 3] = 0
+y = birth[nonans, 2]
+beta_hat, beta_interval = tools.regress(X, y)
+print(f'Övre gräns för konfidensintervallet för moderns vikt: {beta_interval[1][1]}, nedre gräns: {beta_interval[1][0]}')
+print(f'Övre gräns för konfidensintervallet för moderns rökvanor: {beta_interval[2][1]}, nedre gräns: {beta_interval[2][0]}')
+print(f'Övre gräns för konfidensintervallet för moderns träningsvanor: {beta_interval[3][1]}, nedre gräns: {beta_interval[3][0]}')
+if beta_interval[1][0] < 0 and beta_interval[1][1] > 0:
+    print('Konfidensintervallet för moderns vikt inkluderar noll')
+elif beta_interval[1][0] > 0:
+    print('Konfidensintervallet för moderns vikt är positivt')
 else:
-    print('Residualerna är normalfördelade')
+    print('Konfidensintervallet för moderns vikt är negativt')
+if beta_interval[2][0] < 0 and beta_interval[2][1] > 0:
+    print('Konfidensintervallet för moderns rökvanor inkluderar noll')
+elif beta_interval[2][0] > 0:
+    print('Konfidensintervallet för moderns rökvanor är positivt')
+else:
+    print('Konfidensintervallet för moderns rökvanor är negativt')
+if beta_interval[3][0] < 0 and beta_interval[3][1] > 0:
+    print('Konfidensintervallet för moderns träningsvanor inkluderar noll')
+elif beta_interval[3][0] > 0:
+    print('Konfidensintervallet för moderns träningsvanor är positivt')
+else:
+    print('Konfidensintervallet för moderns träningsvanor är negativt')
+#Kontrollräkning
+split = 0.7
+X_train, X_test, y_train, y_test = train_test_split(X, y, split)
+beta = normal_equation(X_train, y_train)
+y_pred = predict(X_test, beta)
+print(f'Fel mellan regress(metod) och kontrollräkning: {np.linalg.norm(beta_hat - beta)}')
 
-
-#Predikera för 2025
-aktuella_år = (moore[:, 0] < 2020) & (moore[:, 0] > 1971)  
-år = moore[aktuella_år, 0]
-X  = np.ones((len(år), 2))
-X[:, 1] = år
-antal_resistorer = moore[aktuella_år, 1]
-w = np.log(antal_resistorer)
-beta_hat, beta_interval = tools.regress(X, w)
-
-år = np.linspace(1971, 2025, (2025-1971)*10)
-X  = np.ones((len(år), 2))
-X[:, 1] = år
-pred_2025 = np.exp(beta_hat[0] + beta_hat[1]*2025)
-print(f'Förväntat antal transistorer 2025: {pred_2025}')
-plt.figure()
-plt.plot(år, np.exp(X @ beta_hat), 'r')
-plt.scatter(moore[:, 0], moore[:, 1])
-plt.plot(2025, pred_2025, 'g*', markersize=10)
-plt.xlabel('År')
-plt.ylabel('Antal transistorer')
-plt.legend(['Linjär regression', 'Data', 'Prediktion 2025'])
+res = y - X @ beta_hat
+_ = stats.probplot(res, plot=plt)
 plt.show()

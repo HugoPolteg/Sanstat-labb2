@@ -21,22 +21,19 @@ mother_weight = birth[:, 14]
 mother_weight = mother_weight[~np.isnan(mother_weight)]
 
 #använd probplot för att kolla om de är normalfördelade
-plt.figure()
+ax1 = plt.subplot(221)
 _ = stats.probplot(birth_weight, plot=plt)
-plt.title('Födelsevikt')
-plt.show()
+ax1.set_title('Födelsevikt')
+ax2 = plt.subplot(222)
 _ = stats.probplot(mother_age, plot=plt)
-plt.title('Moders ålder')
-plt.show()
-plt.figure()
+ax2.set_title('Moderns ålder')
+ax3 = plt.subplot(223)
 _ = stats.probplot(mother_length, plot=plt)
-plt.title('Moders längd')
-plt.show()
-plt.figure()
+ax3.set_title('Moderns längd')
+ax4 = plt.subplot(224)
 _ = stats.probplot(mother_weight, plot=plt)
-plt.title('Moders vikt')
+ax4.set_title('Moderns vikt')
 plt.show()
-
 #H0: X är normalfördelad
 #H1: X är inte normalfördelad (signifikansnivå 5%)
 
@@ -46,18 +43,17 @@ if(res.pvalue < 0.05):
 else:
     print('Födelsevikt är normalfördelad')
 res = stats.jarque_bera(mother_age)
-print(res.pvalue)
 if(res.pvalue < 0.05):
-    print('Moders ålder är inte normalfördelad')
+    print('Moderns ålder är inte normalfördelad')
 else:
-    print('Moders ålder är normalfördelad')
+    print('Moderns ålder är normalfördelad')
 res = stats.jarque_bera(mother_length)
 if(res.pvalue < 0.05):
-    print('Moders längd är inte normalfördelad')
+    print('Moderns längd är inte normalfördelad')
 else:
-    print('Moders längd är normalfördelad')
+    print('Moderns längd är normalfördelad')
 res = stats.jarque_bera(mother_weight)
 if(res.pvalue < 0.05):
-    print('Moders vikt är inte normalfördelad')
+    print('Moderns vikt är inte normalfördelad')
 else:
-    print('Moders vikt är normalfördelad')
+    print('Moderns vikt är normalfördelad')

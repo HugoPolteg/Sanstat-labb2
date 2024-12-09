@@ -19,8 +19,8 @@ alpha = 0.05
 n = len(y)
 lambda_alpha_2 = stats.norm.ppf(1 - alpha / 2)
 d = est*np.sqrt((4-np.pi)/(n*np.pi))
-lower_bound = est - d
-upper_bound = est + d
+lower_bound = est - d*lambda_alpha_2
+upper_bound = est + d*lambda_alpha_2
 print(f'Konfidensintervallet är [{lower_bound}, {upper_bound}] kring {est} med konfidensgrad {(1-alpha)*100}%.')
 n = len(y)
 ## Problem 3: Konfidensintervall (forts.)
