@@ -32,5 +32,6 @@ plt.plot(upper_bound, 0.6, 'g*', markersize=10)
 # Plotta täthetsfunktionen med den skattade parametern.
 x_grid = np.linspace(np.min(y), np.max(y), 60)
 pdf = stats.rayleigh.pdf(x_grid, scale=est)
+plt.legend(['Konfidensintervall för b'])
 plt.plot(x_grid, pdf, 'r')
 plt.show()

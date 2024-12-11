@@ -1,78 +1,85 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import stats
-import tools
-import plotting
-# Problem 1: Simulering av konfidensintervall
-# Parametrar
-# Antal mätningar
-värden = {"n": [25, 100, 5], "mu": [8, 1/2], "sigma": [4, 1/4], "alpha": [0.2, 0.01], "m": [400, 25]}
-for key, värdelista in värden.items():
-    for värde in värdelista:
-        n = 25
-        mu = 2
-        sigma = 1
-        # Ett minus konfidensgraden
-        alpha = 0.05
-        # Antal intervall
-        m = 100
-        if key == "n":
-            n = värde
-        # Väntevärdet
-        elif key == "mu":
-            mu = värde
-        elif key == "sigma":
-            sigma = värde
-        elif key == "alpha":
-            alpha = värde
-        # Standardavvikelsen
-        print(f'n: {n}, mu: {mu}, sigma: {sigma}, alpha: {alpha}, m: {m}')
-        # Simulera n observationer för varje intervall.
-        medelöver = []
-        medelunder = []
-        medelvarians = []
-        medelutfall = []
-        for l in range(100):
-            utfallen = []
-            for k in range(100):
-                x = stats.norm.rvs(loc=mu, scale=sigma, size=(m, n))
-                # Skatta mu med medelvärdet.
-                xbar = np.mean(x, axis=-1)
-                # Beräkna kvantilerna och standardavvikelsen för
-                # medelvärdet.
-                lambda_alpha_2 = stats.norm.ppf(1 - alpha / 2)
-                D = sigma / np.sqrt(n)
-                # Beräkna undre och övre gränserna.
-                undre = xbar - lambda_alpha_2 * D
-                övre = xbar + lambda_alpha_2 * D
-                medelöver.append(np.mean(övre))
-                medelunder.append(np.mean(undre))
-                ## Problem 1: Simulering av konfidensintervall (forts.)
-                # Skapa en figur med storlek 4 × 8 tum.
-                #plt.figure(figsize=(4, 8))
-                # Rita upp alla intervall
-                intervall_utanför = 0
-                for k in range(m):
-                    # Rödmarkera alla intervall som missar mu.
-                    if övre[k] < mu or undre[k] > mu:
-                        color = 'r'
-                        intervall_utanför += 1
-                    else:
-                        color = 'b'
-                    #plt.plot([undre[k], övre[k]], [k, k], color)
-                # Skriv ut antalet intervall som inte innehåller mu.
-                utfallen.append(intervall_utanför)
-                # Fixa till gränserna så att figuren ser lite bättre ut.
-                b_min = np.min(undre)
-                b_max = np.max(övre)
-                #plt.axis([b_min, b_max, -1, m])
-                # Rita ut det sanna värdet.
-                #plt.plot([mu, mu], [-1, m], 'g')
-                # Visa plotten.
-            #plt.show()
-            medelvarians.append(np.var(utfallen))
-            medelutfall.append(np.mean(utfallen))
-        print(f'Varians: {np.mean(medelvarians)}')
-        print(f'Medelutfall: {np.mean(medelutfall)}')
-        print(f'Övre: {np.mean(medelöver)}')
-        print(f'Undre: {np.mean(medelunder)}')
+import scipy.stats as stats
+
+
+def test_konfidensintervall_normalfördelning(
+            n = 25,
+            sigma = 1,
+            mu = 2,
+            alpha = 0.05,
+            m = 1000,
+            ):
+    # skapa en array med m normalfördelade värden
+    x = np.random.normal(loc=mu, scale=sigma, size=(m,n))
+    mean = np.mean(x, axis=1)
+    D = sigma/np.sqrt(n)
+    lambda_alpha_2 = stats.norm.ppf(1-alpha/2)
+
+    # beräkna gränser
+    upper = mean + lambda_alpha_2*D
+    lower = mean - lambda_alpha_2*D
+
+    # skapa figur och plotta gränser
+    fig, ax = plt.subplots(figsize=(4,8))
+    contained = 0
+    for i in range(m):
+        if mu < lower[i] or mu > upper[i]:
+            color = 'red'
+        else:
+            color = 'blue'
+            contained += 1
+        plt.plot([lower[i],upper[i]],[i,i],color=color)
+    plt.plot([mu,mu],[0,m],color='black') # plotta mu, rakt streck i mitten
+
+    # lägg till subplot av alla parametervärden
+    parametertext = f"n = {n}\nsigma = {sigma}\nmu = {mu}\nalpha = {alpha}\nm = {m}"
+    ax.text(0.05, 0.95, parametertext, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+    # skriv ut antal intervall som innehåller mu och förväntade antalet (innan plotten)
+    percentage = contained/m
+    print('expected percentage of intervals containing mu: ' + str(1-alpha))
+    print('actual percentage of intervals containing mu: ' + str(percentage))
+    plt.show()
+
+    
+
+def main():
+    test_konfidensintervall_normalfördelning(            
+            n = 25,
+            sigma = 1,
+            mu = 2,
+            alpha = 0.05,
+            m = 100,
+            )
+    test_konfidensintervall_normalfördelning(            
+            n = 50,
+            sigma = 1,
+            mu = 2,
+            alpha = 0.05,
+            m = 100,
+            )
+    test_konfidensintervall_normalfördelning(            
+            n = 25,
+            sigma = 2,
+            mu = 2,
+            alpha = 0.05,
+            m = 100,
+            )
+    test_konfidensintervall_normalfördelning(            
+            n = 25,
+            sigma = 1,
+            mu = 4,
+            alpha = 0.05,
+            m = 100,
+            )
+    test_konfidensintervall_normalfördelning(            
+            n = 25,
+            sigma = 1,
+            mu = 2,
+            alpha = 0.10,
+            m = 100,
+            )
+
+main()

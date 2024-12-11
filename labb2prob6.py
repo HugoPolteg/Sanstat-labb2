@@ -10,6 +10,7 @@ moore = np.loadtxt('moore.dat')
 antal_resistorer = moore[:, 1]
 w = np.log(antal_resistorer)
 
+# skapa X-matris för minstakvadratmetod
 X  = np.ones((len(år), 2))
 X[:, 1] = år
 #Beräkna linjär regression
@@ -40,15 +41,23 @@ _ = stats.probplot(res, plot=plt)
 # Plotta histogram för residualerna.
 plt.subplot(2, 1, 2)
 plt.hist(res, density=True, bins=30)
+
+
+# skatta sigma för residualerna
+x_mean = np.mean(år)
+y_mean = np.mean(w)
+Syy = (y_mean - w).T @ (y_mean - w)
+Sxy = np.sum((y_mean - w) * (x_mean - år))
+Sxx = (x_mean - år).T @ (x_mean - år)
+sigma = np.sqrt((Syy - Sxy**2/Sxx)/(len(år)-2))
+print(f'Standardavvikelsen för residualerna kan skattas till {sigma} std ger {np.std(res)}')
+
 # Plotta täthetsfunktionen för residualerna.
 x_grid = np.linspace(np.min(res), np.max(res), 60)
-pdf = stats.norm.pdf(x_grid, loc=np.mean(res), scale=np.std(res))
+pdf = stats.norm.pdf(x_grid, loc=np.mean(res), scale=sigma)
 plt.plot(x_grid, pdf, 'r')
 plt.show()
 
-Q0 = np.sum(res**2)
-s = np.sqrt(Q0/(len(år)-2))
-print(f'Standardavvikelsen för residualerna kan skattas till {s}')
 
 _, res_p = stats.jarque_bera(res)
 if(res_p < 0.05):

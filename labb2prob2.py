@@ -26,10 +26,16 @@ print(f"Fel för MK: {error_mk}")
 plt.plot(est_ml, 0.2, 'r*', markersize=10)
 plt.plot(est_mk, 0.2, 'g*', markersize=10)
 plt.plot(b, 0.2, 'bo')
+plt.legend([
+    'maximum likelihood-skattning',
+    'minstakvadrat-skattning',
+    'faktiskt värde',
+    ])
 plt.show()
 ## Problem 2: Maximum likelihood, minsta kvadrat (forts.)
 # Skapa figur.
 plt.figure()
+plt.title('Histogram och plottad täthetsfunktion för ML-skattning av parameter b')
 # Visa histogrammet.
 plt.hist(x, 40, density=True)
 # Plotta täthetsfunktionen för den skattade parametern.

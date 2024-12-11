@@ -32,7 +32,7 @@ Intervallet bli då Ib = b\*obs +- lambda(a/2) \* d\*obs
 
 ## Uppgift 3
 
-## Hur kan man skatta wk = log(yk) = B0 + B1\*xk + ek?
+## Hur kan man skatta wk = log(yk) = B0 + B1\*xk + ek?  
 
 Genom att MK skatta sum((log(yk)-(B0 + B1\*xk))^2) alltså minimera felet kan man få fram en skattning av B0 och B1.
 
