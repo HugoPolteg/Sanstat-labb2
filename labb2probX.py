@@ -7,6 +7,8 @@ import plotting
 #Ladda data
 birth = np.loadtxt('birth.dat')
 
+# Eftersom antalet rökare/ickerökare är stort kommer enligt centrala gränsvärdessatsen det aritmetiska medelvärdet för födelsevikten att vara normalfördelat.
+
 #Extrahera rökare och icke rökare
 smokers = (birth[:, 19] == 3)
 non_smokers = (birth[:, 19] < 3)
@@ -47,6 +49,9 @@ upper_bound = res + t_alpha*d
 lower_bound_lambda = res - lambda_alpha*d
 upper_bound_lambda = res + lambda_alpha*d
 
+# eftersom t-fördelningen går mot standardnormalfördelningen, samt att n är stort i detta
+# fall kan vi med liten skillnad använda antingen t-fördelningen eller den approximativa normalfördelningen
+# för att hitta konfidensintervallet.
 print("för t:")
 print(f'Konfidensintervallet är [{lower_bound}, {upper_bound}] kring {res} med konfidensgrad {(1-alpha)*100}%.')
 print("för lambda:")

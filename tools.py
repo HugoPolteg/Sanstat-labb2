@@ -78,7 +78,7 @@ def regress(X, y, alpha=0.05):
     sse = np.sum(r ** 2)
     v = sse / dof
 
-    c = np.diag(np.linalg.inv(R.T @ R))
+    c = np.diag(np.linalg.inv(R.    T @ R))
 
     t_alpha_2 = stats.t.ppf(1 - alpha / 2, dof)
     dbeta = t_alpha_2 * np.sqrt(v * c)

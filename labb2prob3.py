@@ -13,7 +13,7 @@ plt.plot(y[:100])
 plt.subplot(2, 1, 2)
 plt.hist(y, density=True)
 plt.show()
-est = np.mean(y)*np.sqrt(2/np.pi)
+est = np.mean(y)*np.sqrt(2/np.pi) # detta är MK-skattningen av b
 # Beräkna konfidensintervallet.
 alpha = 0.05
 n = len(y)
